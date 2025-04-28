@@ -1,0 +1,119 @@
+{
+    "took": 34,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 89,
+        "relation": "eq"
+      },
+      "max_score": 1,
+      "hits": [
+        {
+          "_index": "restaurants",
+          "_id": "QE5hfZYBQKwotppyNThx",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Paribar",
+            "City/Country/Continent": "Sí£O Paulo/Brazil/",
+            "Votes": 46
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "hk5hfZYBQKwotppyNThx",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Bardenay",
+            "City/Country/Continent": "Boise/United States/",
+            "Votes": 879
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "i05hfZYBQKwotppyNThx",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Barbacoa Restaurant",
+            "City/Country/Continent": "Boise/United States/",
+            "Votes": 538
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "ik5hfZYBQKwotppyNTly",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Barrett Junction Cafe",
+            "City/Country/Continent": "Potrero/United States/",
+            "Votes": 9
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "uU5hfZYBQKwotppyNTly",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Rhubarb Le Restaurant",
+            "City/Country/Continent": "Singapore/Singapore/",
+            "Votes": 33
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "f05hfZYBQKwotppyNTpy",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "The Cafe Baraco",
+            "City/Country/Continent": "Ahmedabad/India/",
+            "Votes": 317
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "Rk5hfZYBQKwotppyNTty",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Doon Darbar",
+            "City/Country/Continent": "Dehradun/India/",
+            "Votes": 121
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "J05hfZYBQKwotppyNTzo",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "The Grill Darbar",
+            "City/Country/Continent": "Faridabad/India/",
+            "Votes": 17
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "TU5hfZYBQKwotppyNTzo",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Barista",
+            "City/Country/Continent": "Ghaziabad/India/",
+            "Votes": 33
+          }
+        },
+        {
+          "_index": "restaurants",
+          "_id": "dk5hfZYBQKwotppyNTzo",
+          "_score": 1,
+          "_source": {
+            "RestaurantName": "Zambar",
+            "City/Country/Continent": "Gurgaon/India/",
+            "Votes": 802
+          }
+        }
+      ]
+    }
+  }

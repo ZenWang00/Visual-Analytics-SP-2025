@@ -1,0 +1,56 @@
+GET restaurants/_search
+  {
+  "size": 0,
+  "_source": ["AggregateRating", "Votes", "City", "Country", "Coordinates"],
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "geo_distance": {
+            "distance": "10km",
+            "Coordinates": {
+              "lat": 28.535517,
+              "lon": 77.391029
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "weighted_avg_rating": {
+      "weighted_avg": {
+        "value": {
+          "field": "AggregateRating"
+        },
+        "weight": {
+          "field": "Votes"
+        }
+      }
+    },
+    "cities": {
+      "terms": {
+        "field": "City.keyword",
+        "size": 100
+      },
+      "aggs": {
+        "weighted_avg_rating": {
+          "weighted_avg": {
+            "value": {
+              "field": "AggregateRating"
+            },
+            "weight": {
+              "field": "Votes"
+            }
+          }
+        },
+        "country": {
+          "terms": {
+            "field": "Country.keyword",
+            "size": 1
+          }
+        }
+      }
+    }
+  }
+}

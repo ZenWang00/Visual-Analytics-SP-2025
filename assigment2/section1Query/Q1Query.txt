@@ -1,0 +1,42 @@
+GET restaurants/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "RestaurantName": "*bar*"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "wildcard": {
+            "RestaurantName": "*barbecue*"
+          }
+        },
+        {
+          "wildcard": {
+            "RestaurantName": "*barbeque*"
+          }
+        },
+        {
+          "wildcard": {
+            "RestaurantName": "*barbecues*"
+          }
+        },
+        {
+          "wildcard": {
+            "RestaurantName": "*barbeques*"
+          }
+        },
+        {
+          "match": {
+            "RestaurantName": "bar"
+          }
+        }
+      ]
+    }
+  },
+  "_source": ["RestaurantName", "City/Country/Continent", "Votes"]
+}

@@ -1,0 +1,75 @@
+{
+    "took": 19,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 2799,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "cities": {
+        "doc_count_error_upper_bound": -1,
+        "sum_other_doc_count": 2650,
+        "buckets": [
+          {
+            "key": "Jakarta",
+            "doc_count": 16,
+            "avg_price": {
+              "value": 308437.5
+            }
+          },
+          {
+            "key": "Colombo",
+            "doc_count": 14,
+            "avg_price": {
+              "value": 2535.714285714286
+            }
+          },
+          {
+            "key": "Hyderabad",
+            "doc_count": 17,
+            "avg_price": {
+              "value": 1358.8235294117646
+            }
+          },
+          {
+            "key": "Pune",
+            "doc_count": 20,
+            "avg_price": {
+              "value": 1337.5
+            }
+          },
+          {
+            "key": "Jaipur",
+            "doc_count": 18,
+            "avg_price": {
+              "value": 1316.6666666666667
+            }
+          },
+          {
+            "key": "Kolkata",
+            "doc_count": 20,
+            "avg_price": {
+              "value": 1272.5
+            }
+          },
+          {
+            "key": "Bangalore",
+            "doc_count": 20,
+            "avg_price": {
+              "value": 1232.5
+            }
+          }
+        ]
+      }
+    }
+  }

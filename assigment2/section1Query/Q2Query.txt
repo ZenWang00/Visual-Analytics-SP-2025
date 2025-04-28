@@ -1,0 +1,41 @@
+GET restaurants/_search
+{
+  "size": 3,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "Date": {
+              "gte": "2016-01-01",
+              "lte": "2016-12-31"
+            }
+          }
+        },
+        {
+          "geo_distance": {
+            "distance": "20km",
+            "Coordinates": {
+              "lat": 1.3521,
+              "lon": 103.8198
+            }
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "AverageCostForTwo": {
+        "order": "desc"
+      }
+    }
+  ],
+  "_source": [
+    "RestaurantName",
+    "AverageCostForTwo",
+    "Date",
+    "City/Country/Continent",
+    "Coordinates"
+  ]
+}

@@ -1,0 +1,19 @@
+# Fdb version 4
+["pdflatex"] 1745871988.42804 "/Users/zitian/Visual-Analytics-SP-2025/assigment2/zitian_assigment2.tex" "out/zitian_assigment2.pdf" "zitian_assigment2" 1745871988.62436 2
+  "/Users/zitian/Visual-Analytics-SP-2025/assigment2/zitian_assigment2.tex" 1745871987.9831 9810 e8afc8ab7b1ca9102a156b4290bb7310 ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls" 1705352648 20144 147463a6a579f4597269ef9565205cfe ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/base/size10.clo" 1705352648 8448 dbc0dbf4156c0bb9ba01a1c685d3bad0 ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/fontspec/fontspec.sty" 1707868014 3484 ff877041166391bc5ca8a1e45614784e ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1708463273 30006 3d512c0edd558928ddea1690180ef77e ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/l3kernel/expl3.sty" 1708463273 6565 10e89ed128ccd59431746bbdd82129fc ""
+  "/usr/local/texlive/2024/texmf-dist/tex/latex/l3packages/xparse/xparse.sty" 1708376303 9327 11bedad2ac38f92e405a38ed18489a03 ""
+  "/usr/local/texlive/2024/texmf-dist/web2c/texmf.cnf" 1708706663 41649 5d6ae549fbbcb850a863f69aa41f3d10 ""
+  "/usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1727876139 8221409 d91d47a832830780b6623187faf7892c ""
+  "/usr/local/texlive/2024/texmf.cnf" 1710266656 577 e590dabc9e28c5b61546e15f63eebcdf ""
+  "out/zitian_assigment2.aux" 1745871988.42752 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "zitian_assigment2.tex" 1745871987.9831 9810 e8afc8ab7b1ca9102a156b4290bb7310 ""
+  (generated)
+  "out/zitian_assigment2.aux"
+  "out/zitian_assigment2.log"
+  "out/zitian_assigment2.pdf"
+  (rewritten before read)
