@@ -1745,3 +1745,87 @@ This query does not face the shard size problem because:
 - Each range has complete cost statistics (min, max, avg, sum)
 
 The current settings are sufficient for accurate range-based aggregation without requiring shard size adjustments.
+
+## Section 2: Data Visualization
+
+### Part 1: Dashboard Creation
+![[Dashboard_section2.png]]
+The dashboard was created to provide comprehensive insights into the restaurant dataset. Here's a detailed breakdown of each component:
+
+#### 1. Key Metrics Panel
+The dashboard displays three essential metrics at the top:
+- Total Restaurants: 7,435 restaurants reviewed
+- Total Cities: 139 unique cities covered
+- Average Restaurants per City: 68.194 restaurants
+
+#### 2. Price Range Filter
+Implemented a dynamic filter that allows users to select specific price ranges, enabling focused analysis of restaurants within particular price segments.
+
+#### 3. Continental Analysis
+Two visualizations show continental patterns:
+- Average Rating by Continent: Bar chart showing aggregate ratings across continents
+- Average Cost for Two by Continent: Bar chart displaying average costs across continents
+
+#### 4. Review Trends Over Time
+Created a line chart showing:
+- Total reviews trend (blue line)
+- Positive reviews trend (green line, ratings > 3)
+- Negative reviews trend (red line, ratings ≤ 3)
+The chart effectively shows the evolution of restaurant reviews and sentiment over time.
+
+#### 5. Geographic Distribution
+Implemented an interactive map where:
+- Each restaurant is represented by a marker
+- Marker size correlates with the number of votes
+- Provides clear visualization of restaurant density and popularity across regions
+
+#### 6. Restaurant Details Table
+Added a saved search showing detailed restaurant information including:
+- Restaurant name
+- Location details
+- Ratings and reviews
+- Cost information
+This provides granular access to individual restaurant data.
+
+#### 7. Rating-Price Heat Map
+Created a heat map visualization that shows:
+- Price ranges divided into 20 bins on one axis
+- Rating ranges ([0-1), [1-2), [2-3), [3-4), [4-5]) on the other axis
+- Color intensity indicating the number of votes
+This effectively shows the relationship between price, rating, and popularity.
+
+### Part 2: Canvas Creation
+![[Canvas_section2.png]]
+The canvas provides a city-focused view of restaurant ratings with the following components:
+
+#### 1. City Selection
+Implemented a dropdown filter allowing users to select specific cities (currently showing "Istanbul" in the screenshot).
+
+#### 2. Price Category Distribution
+Created a bar chart showing restaurant counts across price categories:
+- Cheap (≤ 50): 4 restaurants
+- Cheap/Medium (50-100]: 5 restaurants
+- Medium (100-250]: 3 restaurants
+- Pricy (250-1000]: Not shown in current view
+- Super Pricy (>1000): Not shown in current view
+
+#### 3. Rating Distribution
+Added a pie chart showing the percentage distribution of restaurant ratings:
+- Good (>4): 75%
+- Medium (1.5-4]: 25%
+- Bad (≤1.5): Not present in current view
+
+#### 4. Restaurant Details Table
+Implemented a paginated table (5 rows per page) showing:
+- Restaurant Name
+- Number of Votes
+- Rating Text
+Current view shows top restaurants including "J'adore Chocolatier" and "Starbucks" with their respective ratings.
+
+#### 5. Key Metrics
+Displayed important statistics:
+- Total Reviews: 10,265
+- Latest Review Date: 2018-08-26
+- Average Cost: 170
+
+The canvas provides an intuitive and interactive way to analyze restaurant data for each city, with clear visualizations and metrics that help users understand the dining landscape in their selected location.

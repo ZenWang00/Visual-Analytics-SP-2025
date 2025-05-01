@@ -7,8 +7,8 @@ import urllib3
 import logging
 import sys
 import os
-from tqdm import tqdm
 from requests.auth import HTTPBasicAuth
+import re
 
 # Suppress insecure HTTPS warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -16,39 +16,104 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# 读取ES连接信息
+# Elasticsearch connection settings
 ES_HOST = "https://localhost:9200"
 ES_USER = "elastic"
 ES_PASSWORD = os.environ.get('ES_PASS')
 if not ES_PASSWORD:
     logging.error("ES_PASS environment variable not set. Please set it before running this script.")
     sys.exit(1)
+ES_HEADERS = {"Content-Type": "application/json"}
 ES_AUTH = HTTPBasicAuth(ES_USER, ES_PASSWORD)
+index_name = "restaurants"
 
-INDEX_NAME = "restaurants"
-PIPELINE_ID = "restaurants_grok_pipeline"
-
-# 创建grok pipeline
-def create_grok_pipeline():
+def create_pipeline():
     """Create the grok-based ingestion pipeline"""
+    pipeline_id = "restaurants_grok_pipeline"
     pipeline_def = {
-        "description": "Pipeline for processing restaurant data",
+        "description": "Pipeline for processing restaurant data using grok patterns",
         "processors": [
+            {
+                "grok": {
+                    "field": "raw_data",
+                    "patterns": [
+                        "%{DATA:SerialNumber};%{DATA:RestaurantName};%{NUMBER:AverageCostForTwo};%{NUMBER:AggregateRating};%{DATA:RatingText};%{NUMBER:Votes};%{TIMESTAMP_ISO8601:Date};\\[%{SPACE}*%{NUMBER:lat}%{SPACE}*,%{SPACE}*%{NUMBER:lon}%{SPACE}*\\];(?:(?<City1>%{DATA})/)?(?<City2>%{DATA})/(?<Country>%{DATA})/(?<Continent>%{DATA})"
+                    ],
+                    "ignore_missing": True
+                }
+            },
+            {
+                "convert": {
+                    "field": "SerialNumber",
+                    "type": "long",
+                    "ignore_missing": True
+                }
+            },
+            {
+                "convert": {
+                    "field": "AverageCostForTwo",
+                    "type": "long",
+                    "ignore_missing": True
+                }
+            },
+            {
+                "convert": {
+                    "field": "AggregateRating",
+                    "type": "double",
+                    "ignore_missing": True
+                }
+            },
+            {
+                "convert": {
+                    "field": "Votes",
+                    "type": "double",
+                    "ignore_missing": True
+                }
+            },
+            {
+                "set": {
+                    "field": "Coordinates",
+                    "value": "{{lat}},{{lon}}",
+                    "ignore_empty_value": True
+                }
+            },
+            {
+                "set": {
+                    "field": "City",
+                    "value": "{{City2}}",
+                    "ignore_empty_value": True
+                }
+            },
+            {
+                "set": {
+                    "field": "City/Country/Continent",
+                    "value": "{{City2}}/{{Country}}/{{Continent}}",
+                    "ignore_empty_value": True
+                }
+            },
             {
                 "date": {
                     "field": "Date",
                     "target_field": "@timestamp",
-                    "formats": ["yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", "strict_date_optional_time"]
+                    "formats": ["yyyy-MM-dd'T'HH:mm:ss'Z'"],
+                    "timezone": "UTC"
+                }
+            },
+            {
+                "remove": {
+                    "field": ["raw_data", "lat", "lon", "City1", "City2"],
+                    "ignore_missing": True
                 }
             }
         ]
     }
     
-    url = f"{ES_HOST}/_ingest/pipeline/{PIPELINE_ID}"
+    url = f"{ES_HOST}/_ingest/pipeline/{pipeline_id}"
     try:
-        response = requests.put(url, auth=ES_AUTH, headers={"Content-Type": "application/json"}, json=pipeline_def, verify=False)
+        response = requests.put(url, auth=ES_AUTH, headers=ES_HEADERS, json=pipeline_def, verify=False)
         response.raise_for_status()
-        logging.info(f"Pipeline {PIPELINE_ID} created/updated.")
+        logging.info(f"Pipeline {pipeline_id} created successfully")
+        return pipeline_id
     except Exception as e:
         logging.error(f"Failed to create pipeline: {str(e)}")
         if hasattr(e, 'response') and e.response is not None:
@@ -56,92 +121,100 @@ def create_grok_pipeline():
             logging.error(f"Response body: {e.response.text}")
         sys.exit(1)
 
-# 删除并重建索引
-def recreate_index():
-    idx_url = f"{ES_HOST}/{INDEX_NAME}"
-    r = requests.head(idx_url, auth=ES_AUTH, verify=False)
-    if r.status_code == 200:
-        requests.delete(idx_url, auth=ES_AUTH, verify=False)
-        logging.info(f"Index '{INDEX_NAME}' deleted.")
-    
-    # 创建带有映射的索引
-    mapping = {
-        "mappings": {
-            "properties": {
-                "Coordinates": {
-                    "type": "geo_point"
-                },
-                "@timestamp": {
-                    "type": "date"
-                },
-                "Date": {
-                    "type": "date"
-                },
-                "AggregateRating": {
-                    "type": "float"
-                },
-                "Votes": {
-                    "type": "float"
-                },
-                "AverageCostForTwo": {
-                    "type": "long"
-                },
-                "SerialNumber": {
-                    "type": "long"
+def create_index_template():
+    """Create an index template with appropriate mappings"""
+    template_id = "restaurants_template"
+    template_def = {
+        "index_patterns": ["restaurants*"],
+        "template": {
+            "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 0
+            },
+            "mappings": {
+                "properties": {
+                    "SerialNumber": {"type": "long"},
+                    "RestaurantName": {"type": "keyword"},
+                    "AverageCostForTwo": {"type": "long"},
+                    "AggregateRating": {"type": "double"},
+                    "RatingText": {"type": "keyword"},
+                    "Votes": {"type": "double"},
+                    "Date": {"type": "date", "format": "iso8601"},
+                    "@timestamp": {"type": "date", "format": "strict_date_optional_time"},
+                    "Coordinates": {"type": "geo_point"},
+                    "City": {"type": "keyword"},
+                    "Country": {"type": "keyword"},
+                    "Continent": {"type": "keyword"},
+                    "City/Country/Continent": {"type": "keyword"}
                 }
             }
         }
     }
-    r = requests.put(idx_url, auth=ES_AUTH, json=mapping, headers={"Content-Type": "application/json"}, verify=False)
-    r.raise_for_status()
-    logging.info(f"Index '{INDEX_NAME}' created with mappings.")
-
-# 校验一行数据
-def validate_row(row):
+    
+    url = f"{ES_HOST}/_index_template/{template_id}"
     try:
-        if int(row[0]) < 0: return False
-        if not (0 <= float(row[3]) <= 5): return False
-        if float(row[5]) < 0: return False
-        if float(row[2]) < 0: return False
-        import re
-        match = re.search(r'\[\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\]', str(row[7]))
-        if match:
-            lat = float(match.group(1)); lon = float(match.group(2))
-            if not (-90 <= lat <= 90 and -180 <= lon <= 180): return False
-        return True
-    except: return False
+        response = requests.put(url, auth=ES_AUTH, headers=ES_HEADERS, json=template_def, verify=False)
+        response.raise_for_status()
+        logging.info(f"Index template {template_id} created successfully")
+    except Exception as e:
+        logging.error(f"Failed to create index template: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            logging.error(f"Response status: {e.response.status_code}")
+            logging.error(f"Response body: {e.response.text}")
+        sys.exit(1)
 
-# 生成bulk数据
+def recreate_index():
+    """Delete and recreate the index"""
+    # Check if index exists and delete it
+    try:
+        response = requests.head(f"{ES_HOST}/{index_name}", auth=ES_AUTH, headers=ES_HEADERS, verify=False)
+        if response.status_code == 200:
+            logging.info(f"Deleting existing index {index_name}")
+            delete_response = requests.delete(f"{ES_HOST}/{index_name}", auth=ES_AUTH, headers=ES_HEADERS, verify=False)
+            delete_response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        # 404 is ok, index doesn't exist
+        if e.response.status_code != 404:
+            logging.error(f"Error checking/deleting index: {str(e)}")
+            sys.exit(1)
+    
+    # Create the index
+    try:
+        response = requests.put(f"{ES_HOST}/{index_name}", auth=ES_AUTH, headers=ES_HEADERS, verify=False)
+        response.raise_for_status()
+        logging.info(f"Index {index_name} created successfully")
+    except Exception as e:
+        logging.error(f"Failed to create index: {str(e)}")
+        if hasattr(e, 'response') and e.response is not None:
+            logging.error(f"Response status: {e.response.status_code}")
+            logging.error(f"Response body: {e.response.text}")
+        sys.exit(1)
+
 def prepare_bulk_data(csv_file):
     """Read the CSV and prepare bulk indexing data"""
     try:
         df = pd.read_csv(csv_file, sep=';')
         logging.info(f"Read {len(df)} rows from {csv_file}")
         
-        # 打印第一行数据，用于调试
-        first_row = df.iloc[0]
-        logging.info(f"First row data: {first_row.to_dict()}")
-        
         bulk_data = []
         for _, row in df.iterrows():
-            # 处理坐标数据
+            # Extract coordinates
             coords_str = str(row['Coordinates'])
-            import re
             match = re.search(r'\[\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\]', coords_str)
             if match:
                 lat = float(match.group(1))
                 lon = float(match.group(2))
-                coordinates = {"lat": lat, "lon": lon}
-                
-                # 验证坐标是否有效
-                if not (-90 <= lat <= 90 and -180 <= lon <= 180):
-                    logging.warning(f"Invalid coordinates values: lat={lat}, lon={lon}")
-                    continue
+                coordinates = f"{lat},{lon}"
             else:
-                logging.warning(f"Invalid coordinates format for row: {coords_str}")
-                continue  # 跳过无效坐标的记录
+                coordinates = "0,0"
             
-            # 直接构建文档
+            # Extract location parts
+            location_parts = str(row['City/Country/Continent']).split('/')
+            city = location_parts[0] if len(location_parts) > 0 else ''
+            country = location_parts[1] if len(location_parts) > 1 else ''
+            continent = location_parts[2] if len(location_parts) > 2 else ''
+            
+            # Build document
             doc = {
                 "SerialNumber": int(row['SerialNumber']),
                 "RestaurantName": str(row['RestaurantName']),
@@ -150,19 +223,16 @@ def prepare_bulk_data(csv_file):
                 "RatingText": str(row['RatingText']),
                 "Votes": float(row['Votes']),
                 "Date": str(row['Date']),
-                "Coordinates": coordinates,  # 使用解析后的坐标对象
-                "City": str(row['City']),
-                "Country": str(row['Country']),
-                "Continent": str(row['Continent']),
-                "City/Country/Continent": f"{str(row['City'])}/{str(row['Country'])}/{str(row['Continent'])}"
+                "@timestamp": str(row['Date']),
+                "Coordinates": coordinates,
+                "City": city,
+                "Country": country,
+                "Continent": continent,
+                "City/Country/Continent": f"{city}/{country}/{continent}"
             }
             
-            # 打印第一条数据的格式，用于调试
-            if len(bulk_data) == 0:
-                logging.info(f"First document format: {json.dumps(doc, indent=2)}")
-            
             # Add index action and document
-            bulk_data.append(json.dumps({"index": {"_index": INDEX_NAME}}))
+            bulk_data.append(json.dumps({"index": {"_index": index_name}}))
             bulk_data.append(json.dumps(doc))
         
         return '\n'.join(bulk_data) + '\n'  # Add final newline
@@ -170,37 +240,54 @@ def prepare_bulk_data(csv_file):
         logging.error(f"Error preparing bulk data: {str(e)}")
         sys.exit(1)
 
-# bulk导入，带重试和进度条
-def bulk_index(bulk_data):
-    url = f"{ES_HOST}/_bulk?pipeline={PIPELINE_ID}"
+def bulk_index(bulk_data, pipeline_id=None):
+    """Perform bulk indexing with the pipeline"""
+    url = f"{ES_HOST}/_bulk"  # Remove pipeline parameter
     headers = {"Content-Type": "application/x-ndjson"}
-    max_retries = 3
-    lines = bulk_data.strip().split('\n')
-    batch_size = 2000
-    for attempt in range(1, max_retries+1):
-        try:
-            for i in tqdm(range(0, len(lines), batch_size), desc=f"Bulk import attempt {attempt}"):
-                batch = '\n'.join(lines[i:i+batch_size]) + '\n'
-                r = requests.post(url, auth=ES_AUTH, headers=headers, data=batch, verify=False)
-                result = r.json()
-                if result.get('errors', False):
-                    logging.error(f"Errors in batch {i//batch_size+1}")
+    
+    try:
+        response = requests.post(url, auth=ES_AUTH, headers=headers, data=bulk_data, verify=False)
+        result = response.json()
+        
+        if result.get('errors', False):
+            error_count = sum(1 for item in result.get('items', []) 
+                             if item.get('index', {}).get('status', 200) >= 400)
+            logging.error(f"Bulk indexing completed with {error_count} errors")
+            for item in result.get('items', []):
+                if item.get('index', {}).get('status', 200) >= 400:
+                    logging.error(f"Error: {item['index'].get('error')}")
+            return False
+        else:
+            took_ms = result.get('took', 0)
+            count = len(result.get('items', []))
+            logging.info(f"Bulk indexing completed successfully: {count} documents indexed in {took_ms}ms")
             return True
-        except Exception as e:
-            logging.error(f"Bulk import error (attempt {attempt}): {e}")
-            if attempt < max_retries:
-                import time; time.sleep(2)
-            else:
-                logging.error("Bulk import permanently failed.")
-                return False
+    except Exception as e:
+        logging.error(f"Error during bulk indexing: {str(e)}")
+        return False
+
+def main(csv_file='restaurants_cleaned.csv'):
+    logging.info("Starting Elasticsearch indexing")
+    
+    # Create the components and prepare data
+    create_index_template()
+    recreate_index()
+    bulk_data = prepare_bulk_data(csv_file)
+    
+    # Perform the bulk indexing
+    success = bulk_index(bulk_data)
+    
+    if success:
+        logging.info("Indexing completed successfully")
+        return 0
+    else:
+        logging.error("Indexing completed with errors")
+        return 1
 
 if __name__ == "__main__":
-    logging.info("Start grok pipeline import...")
-    create_grok_pipeline()
-    recreate_index()
-    bulk_data = prepare_bulk_data('/Users/zitian/Visual-Analytics-SP-2025/assigment2/Assignment2/restaurants_cleaned.csv')
-    ok = bulk_index(bulk_data)
-    if ok:
-        logging.info("Grok pipeline import completed successfully.")
+    # Accept command line argument for CSV file
+    if len(sys.argv) > 1:
+        csv_file = sys.argv[1]
+        sys.exit(main(csv_file))
     else:
-        logging.error("Grok pipeline import failed.")
+        sys.exit(main())
