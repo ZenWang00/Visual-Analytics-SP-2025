@@ -1,0 +1,80 @@
+{
+  "took": 45,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1094,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": []
+  },
+  "aggregations": {
+    "weighted_avg_rating": {
+      "value": 3.475335691819247
+    },
+    "cities": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
+      "buckets": [
+        {
+          "key": "Noida",
+          "doc_count": 999,
+          "weighted_avg_rating": {
+            "value": 3.4814953434299833
+          },
+          "country": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+              {
+                "key": "India",
+                "doc_count": 999
+              }
+            ]
+          }
+        },
+        {
+          "key": "New Delhi",
+          "doc_count": 73,
+          "weighted_avg_rating": {
+            "value": 3.351716305182232
+          },
+          "country": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+              {
+                "key": "India",
+                "doc_count": 73
+              }
+            ]
+          }
+        },
+        {
+          "key": "Faridabad",
+          "doc_count": 22,
+          "weighted_avg_rating": {
+            "value": 2.902033887475224
+          },
+          "country": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 0,
+            "buckets": [
+              {
+                "key": "India",
+                "doc_count": 22
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

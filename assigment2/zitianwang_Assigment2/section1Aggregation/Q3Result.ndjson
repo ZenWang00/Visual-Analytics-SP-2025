@@ -1,0 +1,63 @@
+{
+    "took": 27,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 291,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "votes_ranges": {
+        "buckets": [
+          {
+            "key": "100-250 votes",
+            "from": 100,
+            "to": 250,
+            "doc_count": 75,
+            "cost_stats": {
+              "count": 75,
+              "min": 0,
+              "max": 535,
+              "avg": 78.6,
+              "sum": 5895
+            }
+          },
+          {
+            "key": "250-400 votes",
+            "from": 250,
+            "to": 400,
+            "doc_count": 61,
+            "cost_stats": {
+              "count": 61,
+              "min": 10,
+              "max": 400,
+              "avg": 57.622950819672134,
+              "sum": 3515
+            }
+          },
+          {
+            "key": "400-550 votes",
+            "from": 400,
+            "to": 550,
+            "doc_count": 37,
+            "cost_stats": {
+              "count": 37,
+              "min": 10,
+              "max": 570,
+              "avg": 87.16216216216216,
+              "sum": 3225
+            }
+          }
+        ]
+      }
+    }
+  }

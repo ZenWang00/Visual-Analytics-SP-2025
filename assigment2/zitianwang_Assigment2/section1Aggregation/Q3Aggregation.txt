@@ -1,0 +1,53 @@
+GET restaurants/_search
+ {
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "RatingText.keyword": "Very Good"
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "term": {
+            "Continent.keyword": "Asia"
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "votes_ranges": {
+      "range": {
+        "field": "Votes",
+        "ranges": [
+          {
+            "from": 100,
+            "to": 250,
+            "key": "100-250 votes"
+          },
+          {
+            "from": 250,
+            "to": 400,
+            "key": "250-400 votes"
+          },
+          {
+            "from": 400,
+            "to": 550,
+            "key": "400-550 votes"
+          }
+        ]
+      },
+      "aggs": {
+        "cost_stats": {
+          "stats": {
+            "field": "AverageCostForTwo"
+          }
+        }
+      }
+    }
+  }
+}

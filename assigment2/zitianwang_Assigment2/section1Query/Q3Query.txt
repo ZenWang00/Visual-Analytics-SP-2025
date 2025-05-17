@@ -1,0 +1,45 @@
+GET restaurants/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "wildcard": {
+            "RestaurantName": "*pizza*"
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              { "term": { "RatingText.keyword": "Good" } },
+              { "term": { "RatingText.keyword": "Very Good" } },
+              { "term": { "RatingText.keyword": "Excellent" } }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "wildcard": {
+            "RestaurantName": "*pasta*"
+          }
+        }
+      ]
+    }
+  },
+  "_source": [
+    "City/Country/Continent", 
+    "AggregateRating", 
+    "RestaurantName", 
+    "Votes"
+  ],
+  "sort": [
+    {
+      "AggregateRating": {
+        "order": "desc"
+      }
+    }
+  ],
+  "size": 100
+}

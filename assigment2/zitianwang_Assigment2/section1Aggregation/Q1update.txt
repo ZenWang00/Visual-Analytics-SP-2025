@@ -1,0 +1,31 @@
+GET restaurants/_search
+{
+  "size": 0,
+  "query": {
+    "range": {
+      "Votes": {
+        "gte": 100
+      }
+    }
+  },
+  "aggs": {
+    "cities": {
+      "terms": {
+        "field": "City.keyword",
+        "min_doc_count": 10,
+        "size": 7,
+        "shard_size": 100,
+        "order": {
+          "avg_price": "desc"
+        }
+      },
+      "aggs": {
+        "avg_price": {
+          "avg": {
+            "field": "AverageCostForTwo"
+          }
+        }
+      }
+    }
+  }
+}

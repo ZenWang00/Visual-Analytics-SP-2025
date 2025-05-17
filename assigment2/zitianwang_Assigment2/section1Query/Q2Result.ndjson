@@ -1,0 +1,73 @@
+{
+    "took": 9,
+    "timed_out": false,
+    "_shards": {
+      "total": 1,
+      "successful": 1,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 6,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": [
+        {
+          "_index": "restaurants",
+          "_id": "Q9kOfpYBFfumWPjvvzBL",
+          "_score": null,
+          "_source": {
+            "AverageCostForTwo": 500,
+            "Coordinates": {
+              "lon": 103.8403602,
+              "lat": 1.279419756
+            },
+            "RestaurantName": "Restaurant Andre",
+            "Date": "2016-01-28T14:00:04Z",
+            "City/Country/Continent": "Singapore/Singapore/Asia"
+          },
+          "sort": [
+            500
+          ]
+        },
+        {
+          "_index": "restaurants",
+          "_id": "TtkOfpYBFfumWPjvvzBL",
+          "_score": null,
+          "_source": {
+            "AverageCostForTwo": 300,
+            "Coordinates": {
+              "lon": 103.8601766,
+              "lat": 1.290800881
+            },
+            "RestaurantName": "Summer Pavilion",
+            "Date": "2016-05-22T10:07:17Z",
+            "City/Country/Continent": "Singapore/Singapore/Asia"
+          },
+          "sort": [
+            300
+          ]
+        },
+        {
+          "_index": "restaurants",
+          "_id": "StkOfpYBFfumWPjvvzBL",
+          "_score": null,
+          "_source": {
+            "AverageCostForTwo": 80,
+            "Coordinates": {
+              "lon": 103.8621195,
+              "lat": 1.310668316
+            },
+            "RestaurantName": "The Refinery Singapore",
+            "Date": "2016-05-26T10:08:13Z",
+            "City/Country/Continent": "Singapore/Singapore/Asia"
+          },
+          "sort": [
+            80
+          ]
+        }
+      ]
+    }
+  }

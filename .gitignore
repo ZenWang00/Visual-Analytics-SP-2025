@@ -1,0 +1,11 @@
+/assignment3/data/
+/assignment3/.ipynb_checkpoints/
+/assignment2/venv/
+/assignment2/data/
+/assignment2/.ipynb_checkpoints/
+/assignment1/venv/
+/assignment1/data/
+/assignment1/.ipynb_checkpoints/
+/assignment2/zitian_Assignment2/
+/assignment3/cleaned_taxi_data.parquet
+/assignment3/taxi_data.parquet
